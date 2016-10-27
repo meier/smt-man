@@ -1,0 +1,137 @@
+smt-top(1) -- displays most active nodes, ports, or links
+====
+
+## SYNOPSIS
+
+`smt-top` [OMS SOURCE] [-lE | -lT | -nE | -nT | -pE | -pT] [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command provides a dynamic view of the activity in the fabric.  It uses two snapshots of the `OMS` data (as provided by the OMS SOURCE) to detect changes, calculate rates, sorts and then displays the desired attribute starting with the largest.  Traffic or Errors can be displayed, and they can be organized by node, port, or link.
+
+## OMS SOURCE
+
+Most SMT commands require one or more snapshots of the data provided by the OpenSM Monitoring Service (**OMS**).  These data snapshots can be provided directly (<Online>) via a connection to the OpenSM Monitoring Service, or in a post-mortem (<Offline>) fashion by using an OMS history file.
+
+###Online
+  The OMS runs on the same host as OpenSM (the subnet manager for infiniband).  In order for the command to connect to the service it normally needs to know the port number the service is hosted on, as well as the name of the host itself.  These can be specified with;
+
+  * `-h`, `--host`=[HOST]:
+  Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `-pn`, `--portn`=[PORT]:
+  Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+###Offline
+  Most SMT commands, like this one, can use an OMS history file instead of directly connecting to the service.  The history file (commonly refered to as the *flight recorder* file) is obtained via the *smt-record(1)* command.  The file is specified with;
+
+  * `-rH`, `--readOMSHistory`=[FILE]:
+  Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
+
+## OVERVIEW
+
+One of six different dynamic pieces of information can be monitored; node traffic (-nT), node errors (-nE), port traffic (-pT), port errors (-pE), link traffic (-lT), and link errors (-lE).  Only one of these can be specified, and if nothing is speciied, node traffic will be assumed.
+
+The desired dynamic information is displayed starting with the largest on the first line, and proceeding on subsequent lines in decreasing order.  The number of lines is configurable, and if not specified is 20.  In small fabrics, and for certain attributes, there may not be enough information for 20 lines.  A fabric may not have 20 link errors for instance, and in that case the full list is displayed.  Finally, the amount of information displayed can be limited by using a simple black (reject) and white (accept) filter.  This is useful for restricting the output to only a small set of nodes, for example.
+
+The dynamic nature of the monitored attributes is determined by comparing two successive instances or snapshots of the OMS data.  Since each snapshot has its own timestamp, the period between the two sets of data is known, and the rate of change can thereforth be calculated.
+
+The behavior of this command depends upon the `OMS SOURCE`, whether it is `Online` or `Offline`, and the update rate of the data.  This command has limited interactive capabilities for watching the dynamic display of information.  These options are described below, but the over-arching characteristic which dictates how this command behaves is how fast the `NEXT` snapshot of OMS data becomes available.  Since change can only be calculated when new data is available, this command has to wait for it before updating the display.  This means that when using `Online` mode, updates can occur slowly (the sweep rate of the Performance Manager).  Conversely, updates can happen quickly in `Offline` mode because the entire collection of `OMS` snapshots are available in the file.
+
+\* `Online` startup time can be quick, or very slow, depending upon when the next available OMS snapshot becomes available.
+
+### Once, Continuous, Playback
+  This command can optionally be used to display just one list of top attributes.  By specifying the `-once` option in either `Online` or `Offline` mode, a single top calculation will be performed and displayed, and command line control is returned.
+
+  This command normally "continuously" updates the information it displays, similar to the `top` command.  The terminal, or command line, is controlled by the tool, so that new information can be continuously displayed.  To `exit` this continuous mode, use 'Ctrl-c'.
+
+  A graphical control, in the form of a horizontal slider, is available when using the `Offline` mode of operation.  The `--playControl` option dislays the top information as normal, but also provides a set of gui controls for controlling the speed of playing back the collection of `OMS` snapshots in the history file.  It allows playing and pausing the data, as well as controlling the speed once the data is in play mode.  You can also have the data `-wrap` around to the start, when the end of the data set is reached.  This options should only be selected if your system is capable of displaying graphic user interfaces.  To `exit` this playback mode, close the play control, or use 'Ctrl-c'.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+  * `-filter`, `--filter`=[FILE]:
+  query the fabric for specific information specifed by the [QUERY ARGUMENT] argument
+
+  * `-lE`, `--linkErrors`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-lT`, `--linkTraffic`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-nE`, `--nodeErrors`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-nT`, `--nodeTraffic`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-once`, `--once`:
+  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+
+  * `-pControl`, `--playControl`:
+  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+
+  * `-pE`, `--portErrors`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-pT`, `--portTraffic`=<# lines>:
+  list the available query arguments (same as -q list)
+
+  * `-pX`, `--playX`=<# times faster>:
+  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+
+  * `-wrap`, `--wrap`=<t|f>:
+  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+
+## EXAMPLES
+
+  * `smt-top -ql`:
+  list the query options
+
+  * `smt-top -dF 3`:
+  starting at port 10011, and for the next 3 ports, attempt to find an OMS and report
+
+  * `smt-top -pn 10011 -q switches`:
+  list all the switches in the fabric
+
+  * `smt-top -rH surface3.his -q check`:
+  using the history file, perform a fabric check
+
+  * `smt-top -pn 10013 -sr`:
+  provide a status report for the fabric on port 10013
+
+  * `smt-top -pn 10013 -q service`:
+  check to see if there is a service running on port 10013, and if so, return version and status information
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-utilize(1), smt-node(1), smt-port(1), smt-link(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

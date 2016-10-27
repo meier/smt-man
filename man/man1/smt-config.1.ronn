@@ -1,0 +1,69 @@
+smt-config(1) -- a tool for reading and writing `SMT` configuration files
+====
+
+## SYNOPSIS
+
+`smt-config` [OPTIONS <args>]
+
+## DESCRIPTION
+
+The Subnet Monitoring Tools (`SMT`) can share a common set of user specified attributes, or configuration.  This configuration is normally specified on the command line.
+
+The configuration file supports both configuration and persistance.  If a configuration attribute is specified during an SMT command invocation, it will be saved, and will conditionally be used upon subsequent SMT commands.  This is typically used for setting up the location and verbosity of the log files.  It is also useful for specifying the `OMS SOURCE` once, and then reusing it.
+
+The default location for the configuration file (if it exists) is `$SMT_HOME/config.file`, and `$SMT_HOME` is normally `~/.smt`.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+If no options are provided, a simple status summary is returned.
+
+  * `-lp`, `--list`:
+  lists the current configuration
+
+  * `-wC`, `--writeConfig`=[FILE]:
+  writes the current configuration to the specified file.
+
+## EXAMPLES
+
+  * `smt-config -lp`:
+  displays the current configuration
+
+  * `smt-config -rC %h/.smt/config.file -lp`:
+  reads the configuration from the file and prints it out
+
+  * `smt-config -wC newConfig.file`:
+  writes the current configuration to the file
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-server(1), smt-node(1), smt-gui(1), smt-console(1), smt-help(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

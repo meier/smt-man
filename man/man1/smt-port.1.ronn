@@ -1,0 +1,148 @@
+smt-port(1) -- returns information about one or more ports in the fabric 
+====
+
+## SYNOPSIS
+
+`smt-port` [OMS SOURCE, NODE ID] [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command displays information about one or more ports using the `OMS` data , as provided by the OMS SOURCE.  There are Host Channel Adapter ports and Switch ports.  Although ports are fundamentally identical, switch ports have routes associated with them.  This is really a function of the switch, but one can argue this is an additional characteristic of the port.  This command provides a way to interrogate a port and to obtain detailed information.
+
+A fabric consists of a hierarchy of elements.  The `SMT` commands use the following terms for the various elements in the fabric.
+
+* Fabric - the entire infiniband subnet
+* System - a collection of switches that share a system guid, usually an assembly or chassis
+* Node - a switch, router, or host channel adapter
+* Port - an I/O connection point on a node
+* Link - a negotiated relationship between two connected ports
+
+## OMS SOURCE
+
+Most SMT commands require one or more snapshots of the data provided by the OpenSM Monitoring Service (**OMS**).  These data snapshots can be provided directly (<Online>) via a connection to the OpenSM Monitoring Service, or in a post-mortem (<Offline>) fashion by using an OMS history file.
+
+###Online
+  The OMS runs on the same host as OpenSM (the subnet manager for infiniband).  In order for the command to connect to the service it normally needs to know the port number the service is hosted on, as well as the name of the host itself.  These can be specified with;
+
+  * `-h`, `--host`=[HOST]:
+  Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `-pn`, `--portn`=[PORT]:
+  Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+###Offline
+  Most SMT commands, like this one, can use an OMS history file instead of directly connecting to the service.  The history file (commonly refered to as the *flight recorder* file) is obtained via the *smt-record(1)* command.  The file is specified with;
+
+  * `-rH`, `--readOMSHistory`=[FILE]:
+  Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
+
+## NODE ID, PORT ID
+
+Elements within the fabric can be uniquely identified with keys, descriptions, lids, and guids.  Many SMT commands can operate on a single element, and therefore need some form of identifier.  The SMT commands support some (but not all) of the common ways to identify elements.  Individual ports can be identified by their NODE ID followed by the port number.
+### guid
+A `guid` is a globally unique identifier, and is 64 bit number.  It can be expressed in many ways, and the SMT commands support two different ways of expressing a `guid`.
+
+  * `big integer`:
+  The guid is expressed as a base-10 integer.  A valid guid would look something like: `12345698`
+  * `hexidecimal`:
+  The guid is expressed in 4 groups of 16 bit hexidecimal numbers.  These groups must be seperated by a colon, so a valid guid would look something like: `0006:6a00:e900:131e`
+
+### lid or key
+Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
+### name
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+  * `-q`, `--query`=[QUERY ARGUMENT]:
+  query the port(s) for specific information specifed by the [QUERY ARGUMENT] argument
+
+  * `-ql`, `--queryList`:
+  list the available query arguments (same as -q list)
+
+  * `-sr`, `--status`:
+  provides a status report on all of the ports in the subnet/fabric.  It shows the overall composition of ports in the fabric.
+
+### Query Arguments
+Most query optons require some form of port description.  This is a node description followed by a port number and normally these arguments should be supplied prior to the type of query, and can be in the form of a `guid`, `name`, or `lid` and then a port number.  The last value supplied when specifying a port id is always interpreted as the port number.  Several SMT command can provide node identification information.  Refer to `smt-fabric(1)` or `smt-id(1)`.
+
+  * `counters`:
+  shows the all of ports' counter values, and the deltas, or amounts they changed from the previous sample period
+
+  * `details`:
+  displays all of the "known" port attributes, excluding counters.
+
+  * `errors`:
+  shows only the ports' error counter values and deltas.
+
+  * `link`:
+  displays information about the link (if any) that this port is associated with
+
+  * `list`:
+  list the available query options (same as -ql)
+
+  * `route`:
+  show the routes (node destinations) out of this port.  This is a portion of the switches' routing table, specifically for this port.  Refer to the `smt-route(1)` command for additional information.
+
+  * `status`:
+  provides a status or port summary for this individual port.  This is different than the -sr option (all ports combined).
+
+  * `traffic`:
+  shows the ports' traffic counters, and their deltas.
+
+## EXAMPLES
+
+  * `smt-port -pn 10013`:
+  same as using the -sr option without arguments. Displays a port status summary report, which shows the makeup of all the ports in the fabric, with aggregated attributes.
+
+  * `smt-port -rH fabHistory.his 14 3 -q status`:
+  shows the ports' identification, speed, width, and other attributes. This is for the 3rd port on the node with a lid of 14, using the OMS history file.
+
+  * `smt-port -host localhost -pn 10011 ibcore2 L225 12 -q status`:
+  using the name and port number, shows the status of the individual port (similar to above)
+
+  * `smt-port -q counters -pn 10011 14 3`:
+  shows all of this ports' counter values
+
+  * `smt-port -pn 10013 14 3 -q errors`:
+  shows only the error conters for this port
+
+  * `smt-port -q route ibcore LL13 24`:
+  displays the nodes that can be reached via this port
+
+  * `smt-port -dump`:
+  raw dump of all the information about all the ports
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-fabric(1), smt-system(1), smt-node(1), smt-link(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

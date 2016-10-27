@@ -1,0 +1,137 @@
+smt(1) -- the parent Subnet Monitoring Tool (`SMT`) command
+====
+
+## SYNOPSIS
+
+`smt` [SUB COMMAND] [SUB COMMAND ARGS]
+
+## DESCRIPTION
+
+This `SMT` command is really just a wrapper command, that collects all of the other SMT commands into a single tool suite.  This is a convenience command, intended primarily to perform the default operations for each sub-command.
+
+Most of these sub-commands provide basic `no argument` functionality.  When some form of `OMS SOURCE` is required, a default or persisted value can be used.
+
+In general, it is best to use the individual `SMT` commands when queries of any substantial nature are to be performed.
+
+
+## SUB COMMANDS
+
+The Subnet Monitoring Tools (`SMT`) are organized both by heirarchical objects and by function or capability.  Often times it is useful to start with a tool at the top of the heirachy.  The information gathered at that level can then help inform or direct lower level queries.
+
+### Object based Commands
+  * `--server`, `-srv`:
+  shows the status of the OpenSM Monitoring Service
+  * `--fabric`, `-f`:
+  provides a subnet status report (similar to 'status' on the OpenSM console)
+  * `--system`, `-sys`:
+  discovers and shows any `systems` in the fabric
+  * `--node`, `-n`:
+  shows the number and types of nodes in the fabric
+  * `--port`, `-p`:
+  shows the number and types of ports in the fabric
+  * `--link`, `-l`:
+  shows the number and types of links in the fabric
+  * `--event`, `-e`:
+  provides an event status report
+
+  * `--route`, `-r`:
+  displays routing information for the fabric
+  * `--partition`, `-part`:
+  shows the number and types of partitions in the fabric
+  * `--multicast`, `-m`:
+  shows the variety and membership of multicast groups, if they exist
+
+### Functional Commands
+  * `--top`, `-t`:
+  shows the top 20 nodes with traffic
+  * `--utilize`, `-util`:
+  shows the bandwidth utilization of all ports (summary)
+
+  * `--id`, `-id`:
+  attempts to identify an object by guid, lid, pkey, mlid, or name
+  * `--help`, `-h`:
+  provides navigable help via a gui tool
+  * `--about`, `-abt`:
+  provides JAR package information for the `SMT` package
+  * `--console`, `-con`:
+  an interactive console (curses application)
+  * `--gui`, `-gui`:
+  a graphical tool for investigation, discovery, and exploring Infiniband fabrics
+
+  * `--file`, `-fn`:
+  file interrogation and manipulation
+  * `--record`, `-rcd`:
+  records one or more instances of OMS data (aka "flight recorder", requires a connection).  Currently this option only returns its on-line help.  Use the dedicated `SMT` command instead.
+
+  * `--config`, `-c`:
+  a tool for reading, writing, and parsing SMT Configuration settings.  Currently this option only returns its on-line help.  Use the dedicated `SMT` command instead.
+
+  * `--priv`, `-pv`:
+  invokes a privileged command (requires a connection).  Currently this option only returns its on-line help.  Use the dedicated `SMT` command instead.
+ 
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Sub Command Arguments
+Sub commands can take their normal `options` as `arguments`.  Normally the `smt` command invokes a single sub command, introduced by the single or double hyphen.  The sub commands arguments follow immediately, without hyphens.  This syntax is a little different than invoking the individual `SMT` command directly.  Most sub commands will default to the most common behavior if no arguments are supplied.  In general, however, the **OMS SOURCE** information should be supplied in `argument` form.
+
+* `rH` [FILE]
+
+	Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
+
+  * `h` [HOST]
+
+	Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `pn` [PORT]
+
+	Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+  * `?`
+
+	Returns the help page for the specific sub command.
+
+## EXAMPLES
+
+  * `smt -?`:
+  displays help for the `smt` command
+
+  * `smt --fabric ?`:
+  displays help for the `smt-fabric` command
+
+  * `smt --route pn 10013`:
+  provide routing attributes of the fabric using the OMS available from `localhost` port `10013`.  If the port arguments (pn 10013) where not supplied, this command would have attempted to use the default `localhost`, port `10011`
+
+  * `smt --fabric rH upgrade1.his`:
+  provides a subnet status report for the fabric contained in the OMS history file
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt-about(1), smt-config(1), smt-console(1), smt-event(1), smt-fabric(1), smt-file(1), smt-gui(1), smt-help(1), smt-id(1), smt-link(1), smt-multicast(1), smt-node(1), smt-partition(1), smt-port(1), smt-priv(1), smt-record(1), smt-route(1), smt-server(1), smt-system(1), smt-top(1), smt-utilize(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

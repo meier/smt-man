@@ -1,0 +1,60 @@
+SMT(7) -- Subnet Monitoring Tools
+====
+
+## DESCRIPTION
+
+description
+
+## QUICK START
+
+quickstart
+
+## COMMANDS
+
+list of commands
+
+*  `cmd1` a command
+
+*  `cmd2` another command
+   with some test under it
+
+now some regurlar test
+
+*  `cmd3` and back to indenting the list
+
+and this is how to cause a bread <br>
+one<br>
+two<br>
+three<br>
+four
+five
+
+### Notes
+  this is just a section with notes and I have indented this section by two spaces.  I don't know how it will handle line wraps or parts of paragraphs but this will hopefully show that.  I would like to also double indent, so will try that here.  But I will first try to see how a line starting on a new line gets formatted.
+I think it just gets appended, but I am not sure.
+
+And what about a new line with a blank line in between?  Does that get appended as well, or does it start a new line, and if it starts a new line, does it need to be indented, or does that happen automatically.
+
+  This may be the answer to that because I indented tis line by two spaces, and only two spaces, just to see what would happen, and it looks like I will also see how the line gets wrapped.
+
+	That was a new line with a tab
+
+    And that was a new line with 4 spaces.
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+OMS(7), OsmJniPi(8), smt-about(1), smt-config(1), smt-console(1), smt-event(1), smt-fabric(1), smt-file(1), smt-gui(1), smt-help(1), smt-id(1), smt-link(1), smt-multicast(1), smt-node(1), smt-partition(1), smt-port(1), smt-priv(1), smt-record(1), smt-route(1), smt-server(1), smt(1), smt-top(1), smt-utilize(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

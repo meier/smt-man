@@ -1,0 +1,138 @@
+smt-priv(1) -- invokes a privileged command (`Online` mode only)
+====
+
+## SYNOPSIS
+
+`smt-priv` [OMS SOURCE] [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command provides a set of **privileged** commands that <may> initiate actions in the subnet manager or modify the fabric.  This is one of the few SMT commands that requires a direct connection to the OpenSM Monitoring Service (`OMS`).  These commands are **NOT** benign "monitoring" actions, and therefore require some form of authorization\*.  This command will not work for unauthorized users.
+
+
+\* authorization is a function of both the user and the command
+
+## OMS SOURCE
+
+Although most SMT commands can accept `OMS` snapshots from a file (<Offline>) or via a direct connection (<Online>) to the `OMS`, this command operates exclusively in the <Online> mode. This command and its options operate on an active fabric, with a working subnet manager.
+
+###Online
+  The OMS runs on the same host as OpenSM (the subnet manager for infiniband).  In order for the command to connect to the service it normally needs to know the port number the service is hosted on, as well as the name of the host itself.  These can be specified with;
+
+  * `-h`, `--host`=[HOST]:
+  Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `-pn`, `--portn`=[PORT]:
+  Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+## NODE ID, PORT ID
+
+Elements within the fabric can be uniquely identified with keys, descriptions, lids, and guids.  Many SMT commands can operate on a single element, and therefore need some form of identifier.  The SMT commands support some (but not all) of the common ways to identify elements.
+### guid
+A `guid` is a globally unique identifier, and is 64 bit number.  It can be expressed in many ways, and the SMT commands support two different ways of expressing a `guid`.
+
+  * `big integer`:
+  The guid is expressed as a base-10 integer.  A valid guid would look something like: `12345698`
+  * `hexidecimal`:
+  The guid is expressed in 4 groups of 16 bit hexidecimal numbers.  These groups must be seperated by a colon, so a valid guid would look something like: `0006:6a00:e900:131e`
+
+### lid
+Local identifiers for nodes can be specified in hex or decimal.  Hexidecimal numbers must begin with '0x'.
+
+### name
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+  * `-cC`, `--clearCounters`:
+  clears all port counters (traffic and error).  The Performance Manager is responsible for watching and maintaining the port counters, so this command requests that the PerfMgr perform the counter reset.  This may cause error or warning messages, and confuse analysis tools that expect the traffic and error counters to be ever increasing.
+
+  * `-dP`, `--disablePort`=[NODE ID] [PORT]:
+  uses `ibportstate` to disable the specified port, and returns the result of the command
+
+  * `-eS`, `--enablePort`=[NODE ID] [PORT]:
+  uses `ibportstate` to enable the specified port, and returns the result of the command
+
+  * `-hS`, `--heavySweep`:
+  directs the Subnet Manager to perform a heavy sweep of the fabric.  Every node is queried and updated.
+
+  * `-lS`, `--liteSweep`:
+  directs the Subnet Manager to perform a light sweep of the fabric.  This is less obtrusive than a heavy sweep, but if changes in the fabric are detected, it may cause a heavy sweep anyway.
+
+  * `-oLL`, `--osmLogLevel`=[LOG LEVEL]:
+  modifies the log verbosity level of OpenSM.  Refer to OpenSM for a detailed description of its log level values.  The default value is 0x3, which is 0x1 (ERROR) and 0x2 (INFO).  Many combinations are possible.
+
+  * `-pS`, `--pfmgrSweep`:
+  requests the Performance Manager to immediately perform a sweep.  Normally the Performance Manager sweeps the fabric at regular intervals, but this command can force it to occur.
+
+  * `-pSS`, `--pfmgrSweepPeriod`=[SECONDS]:
+  sets the Performance Managers sweep period to the value specified.  This value is in seconds, and should not be less than 5 seconds.  This new value will immediately be used, but will not persist if the Subnet Manager is restarted.
+
+  * `-qP`, `--queryPort`=[NODE ID] [PORT NUM]:
+  queries the port using `ibportstate`.  The arguments are passed to that command, and the output is returned.  This is simply a query, you cannot alter the port with this command. Similar to `smt-port -q status`.
+
+  * `-rt`, `--re-route`:
+  directs the Subnet Manager to re-route the fabric.  This can be disruptive, since the routing table in every switch will be re-programmed.
+
+  * `-uD`, `--updateDesc`:
+  node descriptions (names) are normally obtained during initialization, and never updated after that.  This is a way to refresh the descriptions without restarting the Subnet Manager.
+
+  * `-X`, `--rCommand`=[<command with args>]:
+  execute a remote command.  The supplied command and arguments (in quotes) will be invoked on the remote management node, and the results will be returned.  The command must be in the list of "permitted" remote commands.  By default, the "hostname" command is always allowed.  Other commands can be added to the permitted list as necessary.
+
+## EXAMPLES
+
+  * `smt-priv -h localhost -pn 10011 -X \"hostname\"`:
+  invoke the **hostname** command on the OMS node, and return the results
+
+  * `smt-priv -pn 10011 -dP 14 3`:
+  disable port 3 of the switch with a lid of 14
+
+  * `smt-priv -pn 10013 pS`:
+  force the Performance Manager to sweep the fabric, and update its counter values
+
+  * `smt-priv -rt`:
+  force the Subnet Manager to re-route the fabric
+
+  * `smt-priv -qP 0006:6a00:ec00:3c53 33`:
+  return the results of `ibportstate -G 0x00066a00ec003c53 33`
+
+  * `smt-priv -cC`:
+  request the Performance Manager to reset all of the counters in the fabric to zero.
+
+  * `smt-priv -uD`:
+  updates the node descriptions
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-server(1), smt-console(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

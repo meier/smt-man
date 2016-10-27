@@ -1,0 +1,125 @@
+smt-multicast(1) -- returns information about the one-to-many communication mechanism
+====
+
+## SYNOPSIS
+
+`smt-multicast` [OMS SOURCE, <NODE ID>, <MLID>] [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command displays information about the multicast (one-to-many) groups, by using the data in the `OMS` snapshot, as provided by the OMS SOURCE. Members of the same multicast group recieve messages intended for the group.  This is an efficient way to broadcast messages to a subset of the fabric.  Many different groups can exist. 
+
+## OMS SOURCE
+
+Most SMT commands require one or more snapshots of the data provided by the OpenSM Monitoring Service (**OMS**).  These data snapshots can be provided directly (<Online>) via a connection to the OpenSM Monitoring Service, or in a post-mortem (<Offline>) fashion by using an OMS history file.
+
+###Online
+  The OMS runs on the same host as OpenSM (the subnet manager for infiniband).  In order for the command to connect to the service it normally needs to know the port number the service is hosted on, as well as the name of the host itself.  These can be specified with;
+
+  * `-h`, `--host`=[HOST]:
+  Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `-pn`, `--portn`=[PORT]:
+  Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+###Offline
+  Most SMT commands, like this one, can use an OMS history file instead of directly connecting to the service.  The history file (commonly refered to as the *flight recorder* file) is obtained via the *smt-record(1)* command.  The file is specified with;
+
+  * `-rH`, `--readOMSHistory`=[FILE]:
+  Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
+
+## NODE ID
+
+Elements within the fabric can be uniquely identified with keys, descriptions, lids, and guids.  Many SMT commands can operate on a single element, and therefore need some form of identifier.  The SMT commands support some (but not all) of the common ways to identify elements.
+### guid
+A `guid` is a globally unique identifier, and is 64 bit number.  It can be expressed in many ways, and the SMT commands support two different ways of expressing a `guid`.
+
+  * `big integer`:
+  The guid is expressed as a base-10 integer.  A valid guid would look something like: `12345698`
+  * `hexidecimal`:
+  The guid is expressed in 4 groups of 16 bit hexidecimal numbers.  These groups must be seperated by a colon, so a valid guid would look something like: `0006:6a00:e900:131e`
+
+### mlid
+Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
+### name
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+  * `-q`, `--query`=[QUERY ARGUMENT]:
+  query the fabric for specific information specifed by the [QUERY ARGUMENT] argument
+
+  * `-ql`, `--queryList`:
+  list the available query arguments (same as -q list)
+
+  * `-sr`, `--status`:
+  provides a status or summary report on the number and attributes of the multicast groups in the subnet.
+
+### Query Arguments
+The `member` argument expects a NODE ID which be in the form of a `guid`, `name`, or `lid`.  The `mlid` argument wants an integer, normally in hex.
+
+  * `groups`:
+  lists all of the multicast groups by mlid, and also shows the number of members.
+
+  * `list`:
+  list the available query options (same as -ql)
+
+  * `member`:
+  list the groups (if any) that the node is a member of.  This query argument expects a NODE ID.
+
+  * `mlid`:
+  displays attributes of the multicast group specified by the mlid.  Includes membership list.  This query argument expects an `mlid`
+
+  * `status`:
+  provides a status report, identical to using the `-sr` command option.
+
+## EXAMPLES
+
+  * `smt-multicast -rH CabSnap1.his`:
+  displays a summary of the multicast groups and membership (same as -sr and -q status)
+
+  * `smt-multicast -rH CabSnap1.his -q groups`:
+  lists the multicast groups, their mlid, and number of members
+
+  * `smt-multicast -rH CabSnap1.his -q mlid 49153`:
+  list the members in group with mlid of 49153, (0xc001)
+
+  * `smt-multicast -rH CabSnap1.his 0011:7500:0077:6a0e -q member`:
+  list all the groups of which this guid is a member
+
+  * `smt-multicast -pn 10013 -sr`:
+  displays a summary of the multicast groups and membership (identical to -q status)
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-id(1), smt-fabric(1), smt-partition(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

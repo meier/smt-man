@@ -1,0 +1,165 @@
+smt-link(1) -- returns information about one or more links in the fabric 
+====
+
+## SYNOPSIS
+
+`smt-link` [OMS SOURCE, <NODE ID, LINK ID>] [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command displays information about one or more links using the `OMS` data , as provided by the OMS SOURCE.  A link, in this context, does not refer to a cable, but rather the relationship between two ports.  When a link is established, two ports negotiate the connection attributes.  A link, therefore, consists of these shared attributes, as well as the relationship between the two ports.  This command provides a way to interrogate links.
+
+A fabric consists of a hierarchy of elements.  The `SMT` commands use the following terms for the various elements in the fabric.
+
+* Fabric - the entire infiniband subnet
+* System - a collection of switches that share a system guid, usually an assembly or chassis
+* Node - a switch, router, or host channel adapter
+* Port - an I/O connection point on a node
+* Link - a negotiated relationship between two connected ports
+
+## OMS SOURCE
+
+Most SMT commands require one or more snapshots of the data provided by the OpenSM Monitoring Service (**OMS**).  These data snapshots can be provided directly (<Online>) via a connection to the OpenSM Monitoring Service, or in a post-mortem (<Offline>) fashion by using an OMS history file.
+
+###Online
+  The OMS runs on the same host as OpenSM (the subnet manager for infiniband).  In order for the command to connect to the service it normally needs to know the port number the service is hosted on, as well as the name of the host itself.  These can be specified with;
+
+  * `-h`, `--host`=[HOST]:
+  Specifies the name of the OpenSM host where OMS runs.  HOST is either the fully qualified name of the host node, or can be *localhost*.  If not specified, *localhost* is assumed.
+
+  * `-pn`, `--portn`=[PORT]:
+  Specifies the port number for the service.  PORT should normally be the default value of *10011*, unless service has been configured otherwise, or unless some sort of port forwarding mechanism is being used.  If not specified, *10011* is assumed.
+
+###Offline
+  Most SMT commands, like this one, can use an OMS history file instead of directly connecting to the service.  The history file (commonly refered to as the *flight recorder* file) is obtained via the *smt-record(1)* command.  The file is specified with;
+
+  * `-rH`, `--readOMSHistory`=[FILE]:
+  Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
+
+## NODE ID, LINK ID
+
+Elements within the fabric can be uniquely identified with keys, descriptions, lids, and guids.  Many SMT commands can operate on a single element, and therefore need some form of identifier.  The SMT commands support some (but not all) of the common ways to identify elements.  Individual links can be identified by either of their PORT IDs.  A PORT ID is simply a NODE ID plus a port number.
+### guid
+A `guid` is a globally unique identifier, and is 64 bit number.  It can be expressed in many ways, and the SMT commands support two different ways of expressing a `guid`.
+
+  * `big integer`:
+  The guid is expressed as a base-10 integer.  A valid guid would look something like: `12345698`
+  * `hexidecimal`:
+  The guid is expressed in 4 groups of 16 bit hexidecimal numbers.  These groups must be seperated by a colon, so a valid guid would look something like: `0006:6a00:e900:131e`
+
+### lid or key
+Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
+### name
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+If a NODE ID is supplied with the command, then all of the links of the switch or channel adapter will be displayed.  If a PORT ID is supplied, then the individual link associated with that port will be displayed.
+
+  * `-L`, `--level`=[level value]:
+  list all of the links with a specific level.  Level 0 shows all of the links connected to Host Channel Adapters.
+
+  * `-oM`, `--onlyMissing`=[<t/f>]:
+  modifies a query to inlude only the "Down" or missing links if the argument is true (T/t).  If the argument is false (F/f), then only the active, or "LinkUp" links are displayed.  Only modifies the "hosts" and "switches" query.
+
+  * `-q`, `--query`=[QUERY ARGUMENT]:
+  query the links for specific information specifed by the [QUERY ARGUMENT] argument
+
+  * `-ql`, `--queryList`:
+  list the available query arguments (same as -q list)
+
+  * `-sr`, `--status`:
+  provides a status report on all of the links in the subnet/fabric.  It shows a summary of much of the information that can be obtained with the various query arguments.
+
+### Query Arguments
+Most query optons are not intended for individual links, rather they return results for the entire fabric.  Many of the query arguments are simply ways to return a subset of the fabrics links that share a common trait, such as `switches`, which returns only the switch to switch links.
+
+  * `active`:
+  shows all of the links in the fabric that are active
+
+  * `all`:
+  shows all of the links
+
+  * `down`:
+  shows all of the inactive links
+
+  * `errors`:
+  shows the links in the system that have port errors on either end of the link
+
+  * `hosts`:
+  shows the links that are connected to Host Channel Adapters
+
+  * `levels`:
+  displays the hierarchy of links.  Level 0 is the number of `host` links, and the remaining levels all represent `switch` links.
+
+  * `list`:
+  list the available query options (same as -ql)
+
+  * `status`:
+  provides a status report, identical to using the `-sr` command option.
+
+  * `switches`:
+  shows the switch-to-switch links in the fabric.  This usually represents the majority of the links.
+
+## EXAMPLES
+
+  * `smt-link -ql`:
+  list the query options
+
+  * `smt-link -rH fabHist.his --status`:
+  provides a link status report from the data in the history file.
+
+  * `smt-link -pn 10011 -q errors`:
+  list all of the links that are currently experiencing errors
+
+  * `smt-link -rH surface3.his -q switches -oM true`:
+  using the history file, show only the down links between switches
+
+  * `smt-link -pn 10013 -q levels`:
+  provide a link hierachy report, showing how many links at each level in the fabric
+
+  * `smt-link -pn 10013 -L 0`:
+  list all of the links at level 0 (host links)
+
+  * `smt-link -pn 10011 0006:6a00:e300:4411`:
+  list all of the links associated with this node guid
+
+  * `smt-link -pn 10011 0006:6a00:e300:4411:16`:
+  list the link associated with this port id (could also use 0006:6a00:e300:4411 16)
+
+  * `smt-link -rH smallFab.his bcore1 L224`:
+  list all of the links associated with this node name
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-fabric(1), smt-system(1), smt-node(1), smt-port(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

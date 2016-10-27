@@ -1,0 +1,55 @@
+smt-help(1) -- a navigable help system for `OMS/SMT` 
+====
+
+## SYNOPSIS
+
+`smt-help` [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command is a JavaHelp application.  It provides navigable and searchable help primarily for the `SMT` commands, but also contains some `OMS` background information as well as some key Infiniband and OpenSM information.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+## EXAMPLES
+
+The `smt-help` command doesn't require command line arguments, except for diagnostic purposes.  The normal use is to invoke it without any options.
+
+  * `smt-help`:
+  list the query options
+
+  * `smt-help -v`:
+  starting at port 10011, and for the next 3 ports, attempt to find an OMS and report
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-server(1), smt-gui(1), 
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+

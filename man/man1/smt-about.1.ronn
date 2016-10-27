@@ -1,0 +1,56 @@
+smt-about(1) -- provides JAR package information 
+====
+
+## SYNOPSIS
+
+`smt-about` [OPTIONS <args>]
+
+## DESCRIPTION
+
+This SMT command uses the Java classpath and execution environment to provide attribution information for the various JAR packages that are used with `OMS` and `SMT`.  It is common practice to populate a JAR package with a MANIFEST that includes the provenance, or record of when it was built and by whom.  The intent is to give credit to all the freely available software used by this set of tools.
+
+## OPTIONS
+### Generic SMT Options
+  * `-?`, `--Help`:
+  provides an abbreviated form of help
+
+  * `-lf`, `--logFile`=[FILE]:
+  the filename for holding this commands' log messages
+
+  * `-ll`, `--logLevel`=[LEVEL]:
+  the verbosity of the logging, where LEVEL is SEVERE, WARNING, INFO, CONFIG, FINE, FINER, or ALL.
+
+  * `-rC`, `--readConfig`=[FILE]:
+  reads the specified configuration file.  The configuration file typically holds a users' default setting for things like the logLevel.  Refer to the *smt-config(1)* command.
+
+  * `-v`, `--version`:
+  prints the version of the SMT command
+
+### Command Options
+  None
+
+## EXAMPLES
+
+  * `smt-about`:
+  list the package information for all of the JAR files used by OMS/SMT
+
+  * `smt-about -?`:
+  provide command line help for this command
+
+## AUTHOR
+
+Tim Meier <meier3@llnl.gov>
+
+## COPYRIGHT
+
+Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+  Produced at the Lawrence Livermore National Laboratory.
+  All rights reserved.
+  LLNL-CODE-673346
+
+## SEE ALSO
+
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-server(1), smt-help(1)
+
+[opensm-smt](https://github.com/meier/opensm-smt) on GitHub
+
