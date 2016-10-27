@@ -7,7 +7,7 @@ smt-top(1) -- displays most active nodes, ports, or links
 
 ## DESCRIPTION
 
-This SMT command provides a dynamic view of the activity in the fabric.  It uses two snapshots of the `OMS` data (as provided by the OMS SOURCE) to detect changes, calculate rates, sorts and then displays the desired attribute starting with the largest.  Traffic or Errors can be displayed, and they can be organized by node, port, or link.
+This SMT command provides a dynamic view of the activity in the fabric.  It uses two snapshots of the `OMS` data (as provided by the OMS SOURCE) to detect changes, calculate rates, sort, and then displays the desired attribute starting with the largest.  Traffic or Errors can be displayed, and they can be organized by node, port, or link.
 
 ## OMS SOURCE
 
@@ -36,16 +36,34 @@ The desired dynamic information is displayed starting with the largest on the fi
 
 The dynamic nature of the monitored attributes is determined by comparing two successive instances or snapshots of the OMS data.  Since each snapshot has its own timestamp, the period between the two sets of data is known, and the rate of change can thereforth be calculated.
 
-The behavior of this command depends upon the `OMS SOURCE`, whether it is `Online` or `Offline`, and the update rate of the data.  This command has limited interactive capabilities for watching the dynamic display of information.  These options are described below, but the over-arching characteristic which dictates how this command behaves is how fast the `NEXT` snapshot of OMS data becomes available.  Since change can only be calculated when new data is available, this command has to wait for it before updating the display.  This means that when using `Online` mode, updates can occur slowly (the sweep rate of the Performance Manager).  Conversely, updates can happen quickly in `Offline` mode because the entire collection of `OMS` snapshots are available in the file.
+The behavior of this command depends upon the `OMS SOURCE`, whether it is `Online` or `Offline`, and the update rate of the data.  This command has limited interactive capabilities for watching the dynamic display of information.  These options are described below, but the over-arching characteristic which dictates how this command behaves is how fast the `NEXT` snapshot of OMS data becomes available.  Since change can only be calculated when new data is available, this command has to wait for it before updating the display.  This means that when using `Online` mode, updates can occur slowly (the sweep rate of the Performance Manager).  Conversely, updates can happen quickly in `Offline` mode because the entire collection of `OMS` snapshots are available in the history file.
 
-\* `Online` startup time can be quick, or very slow, depending upon when the next available OMS snapshot becomes available.
+* `Online` startup time can be quick, or very slow, depending upon when the next `OMS` snapshot becomes available.
 
 ### Once, Continuous, Playback
-  This command can optionally be used to display just one list of top attributes.  By specifying the `-once` option in either `Online` or `Offline` mode, a single top calculation will be performed and displayed, and command line control is returned.
+  This command can optionally be used to display just one list of "top" attributes.  By specifying the `-once` option in either `Online` or `Offline` mode, a single top calculation will be performed and displayed, and the command will exit, returning command line control.
 
-  This command normally "continuously" updates the information it displays, similar to the `top` command.  The terminal, or command line, is controlled by the tool, so that new information can be continuously displayed.  To `exit` this continuous mode, use 'Ctrl-c'.
+  This command normally "continuously" updates the "top" information it displays, similar to the linux `top` command.  The terminal, or command line, is controlled by the tool so that new information can be continuously displayed.  To `exit` this continuous mode, use 'Ctrl-c'.
 
-  A graphical control, in the form of a horizontal slider, is available when using the `Offline` mode of operation.  The `--playControl` option dislays the top information as normal, but also provides a set of gui controls for controlling the speed of playing back the collection of `OMS` snapshots in the history file.  It allows playing and pausing the data, as well as controlling the speed once the data is in play mode.  You can also have the data `-wrap` around to the start, when the end of the data set is reached.  This options should only be selected if your system is capable of displaying graphic user interfaces.  To `exit` this playback mode, close the play control, or use 'Ctrl-c'.
+  A graphical control, in the form of a horizontal slider, is available when using the `Offline` mode of operation.  The `--playControl` option displays the "top" information as normal, but also provides a set of gui controls for controlling the speed of playing back the collection of `OMS` snapshots in the history file.  It allows playing and pausing the data, as well as controlling the speed once the data is in play mode.  You can also have the data `-wrap` around to the start, when the end of the data set is reached.  This options should only be selected if your system is capable of displaying graphic user interfaces.  To `exit` this playback mode, close the play control, or use 'Ctrl-c'.
+
+### Filter
+
+A simple filter can be used to restrict the "top" results. This is a useful capability when the dynamic activity of only a small subset of the fabric is desired. Perhaps the activity of a single node needs to be monitored, and there is no interest in the remainder of the fabric. This can be easily achieved by using this simple black and white filter.
+
+The filter is described in a file which uses three special characters; `*`, `@`, and `#`. They must be placed at the beginning of a new line.
+
+  * `* White`:
+  When placed at the beginning of a new line, this directive indicates that all lines following this line will contain strings that should be white listed. If the white list is empty, all strings are permitted. If the white list is populated, then `ONLY` strings contained in the white list will pass through the filter.
+
+  * `* Black`:
+  When placed at the beginning of a new line, this directive indicates that all lines following this line will contain strings that should be black listed. If the black list is empty, all strings are permitted. If the black list is populated, then strings contained in the black list will be excluded, or filtered.
+
+  * `@ <Filename>`:
+  When placed at the beginning of a new line, with a valid filename, the contents of the file is used to add filter directives. This is useful for building complex filters from a collection of smaller or simple filters.
+
+  * `# <Comment>`:
+  When placed at the beginning of a new line, the line will be ignored, and any text will be considered a comment.
 
 ## OPTIONS
 ### Generic SMT Options
@@ -66,57 +84,51 @@ The behavior of this command depends upon the `OMS SOURCE`, whether it is `Onlin
 
 ### Command Options
   * `-filter`, `--filter`=[FILE]:
-  query the fabric for specific information specifed by the [QUERY ARGUMENT] argument
+  use the provided filter file to limit the "top" results
 
   * `-lE`, `--linkErrors`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the "top" link errors, and limit the results to the number of lines specified
 
   * `-lT`, `--linkTraffic`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the links with the "top" traffic, and limit the results to the number of lines specified
 
   * `-nE`, `--nodeErrors`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the "top" node errors, and limit the results to the number of lines specified
 
   * `-nT`, `--nodeTraffic`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the nodes with the "top" traffic, and limit the results to the number of lines specified
 
   * `-once`, `--once`:
-  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+  instead of continuously updating the "top" results, just provide a single result and stop.
 
   * `-pControl`, `--playControl`:
-  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+  when using `Offline` mode, provide a graphical horizontal slider for controlling playback of the `OMS` snapshots from the file.
 
   * `-pE`, `--portErrors`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the "top" port errors, and limit the results to the number of lines specified
 
   * `-pT`, `--portTraffic`=<# lines>:
-  list the available query arguments (same as -q list)
+  display the ports with the "top" traffic, and limit the results to the number of lines specified
 
   * `-pX`, `--playX`=<# times faster>:
-  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+  when using `Offline` mode, directs the collection of `OMS` snapshots from the file to arrive this many times faster than normal.
 
   * `-wrap`, `--wrap`=<t|f>:
-  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+  when using `Offline` mode, directs the playback of the `OMS` snapshots to restart at the beginning when the end is reached (if true), or to simple stop (if false). By default, playback will stop when the end of the collection of snapshots is reached. The command will not exit in either condition, so if it has reached the end of the snapshots it will just continually update the same "top" information.
 
 ## EXAMPLES
 
-  * `smt-top -ql`:
-  list the query options
+  * `smt-top -pn 10011`:
+  continuously display the "top" 20 traffic nodes using the `Online` mode via port 10011
 
-  * `smt-top -dF 3`:
-  starting at port 10011, and for the next 3 ports, attempt to find an OMS and report
+  * `smt-top -rH myHour.his -pX 10 -wrap t -lE 10`:
+  using the history file, replay the data back at 10 times normal speed, and wrap around to the beginning when the end is reached. Display at most 10 lines of the "top" links with errors.
 
-  * `smt-top -pn 10011 -q switches`:
-  list all the switches in the fabric
+  * `smt-top -pn 10013 -once -filter CabFilter.flt -pT 10`:
+  display the "top" 10 ports with traffic that pass through the filter, using the `OMS` on 10013. Display once, and exit.
 
-  * `smt-top -rH surface3.his -q check`:
-  using the history file, perform a fabric check
-
-  * `smt-top -pn 10013 -sr`:
-  provide a status report for the fabric on port 10013
-
-  * `smt-top -pn 10013 -q service`:
-  check to see if there is a service running on port 10013, and if so, return version and status information
+  * `smt-top -rH myHour.his -pX 18 -pControl -nE 15`:
+  using the history file, replay the data back at 18 times normal speed, and display, at most, the "top" 15 nodes with errors. Also, provide the play control gui for interactive control.
 
 ## AUTHOR
 

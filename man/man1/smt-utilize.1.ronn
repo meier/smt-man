@@ -1,21 +1,13 @@
-smt-(1) -- returns information about something in the fabric 
+smt-utilize(1) -- displays bandwidth utilization as a percentage of theoretical maximum 
 ====
 
 ## SYNOPSIS
 
-`smt-` [OMS SOURCE, NODE ID] [OPTIONS <args>]
+`smt-utilize` [OMS SOURCE] [<-CA | -SW>] [OPTIONS <args>]
 
 ## DESCRIPTION
 
-This SMT command displays information about one or more nodes using the `OMS` data , as provided by the OMS SOURCE.  Nodes can be switches, routers, or host channel adapters.  Each type of node has its own set of attributes and objects. This command provides a way to interrogate a node, discover its type, and potentially obtain enough information for more detailied queries.
-
-A fabric consists of a hierarchy of elements.  The `SMT` commands use the following terms for the various elements in the fabric.
-
-* Fabric - the entire infiniband subnet
-* System - a collection of switches that share a system guid, usually an assembly or chassis
-* Node - a switch, router, or host channel adapter
-* Port - an I/O connection point on a node
-* Link - a negotiated relationship between two connected ports
+This  SMT  command provides a dynamic view of the traffic activity in the fabric. It uses two snapshots of the `OMS` data (as provided by the OMS SOURCE) to detect changes, calculate trasmission rates,  and  bandwidth  utilization  for  each  port.  The  fabric  can  be  analyzed  as a whole, or divided up between links to Channel Adapters, and links between Switches.
 
 ## OMS SOURCE
 
@@ -36,21 +28,23 @@ Most SMT commands require one or more snapshots of the data provided by the Open
   * `-rH`, `--readOMSHistory`=[FILE]:
   Specifies the OMS history file to use with this command.  FILE is a normal (absolute or relative) filename.  Additionally, the special characters **%h** and **%t** can be used to specify the users' home or temp directory, respectively.
 
-## NODE ID
+## OVERVIEW
+Infiniband links consist of two connected ports that have negotiated shared attributes (speed, width, etc.) and have established a communication path. The links, and their ports, have a theoretical bandwidth limit. This command attempts to determine how much of that bandwidth is being used (bandwidth utilization, or simply **utilization**) at any point in time. Traffic patterns in a fabric will be dependent on the physical structure of the subnet as well as the routing algorithms. But links between nodes can be inherently different. Normally I/O traffic on the fabric originates and terminates at Channel Adapter nodes and their ports. Those CA links only need to support traffic to or from those CA nodes. Links between Switches, on the other hand, may need to share the available bandwidth for multiple sources and destinations.
 
-Elements within the fabric can be uniquely identified with keys, descriptions, lids, and guids.  Many SMT commands can operate on a single element, and therefore need some form of identifier.  The SMT commands support some (but not all) of the common ways to identify elements.
-### guid
-A `guid` is a globally unique identifier, and is 64 bit number.  It can be expressed in many ways, and the SMT commands support two different ways of expressing a `guid`.
+This command provides a way to analyze the bandwidth utilization for the entire fabric (all ports), just the channel adapter ports and ports connected to those ports (-CA), or just the ports connected between switches (-SW). These three options should provide insight into how components in the fabric are being used.
 
-  * `big integer`:
-  The guid is expressed as a base-10 integer.  A valid guid would look something like: `12345698`
-  * `hexidecimal`:
-  The guid is expressed in 4 groups of 16 bit hexidecimal numbers.  These groups must be seperated by a colon, so a valid guid would look something like: `0006:6a00:e900:131e`
+An analysis report is generated, which consists of a collection of 10% bandwidth buckets. The number of ports that use a percentage of their bandwidths is placed in each of the ten buckets. Minimums, maximums, and averages are also displayed. The analysis is broken down in this way to show the how the bandwidth utilization is distributed with respect to the ports. And empty bucket will not show up in the analysis report. It is normal to have several empty buckets. Alternately, the **-dump** option provides a way to ignore the bucket analysis, and obtain a simple report that is a single line for each **OMS** snapshot and timestamp.
 
-### lid or key
-Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
-### name
-Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+The behavior of this command depends upon the **OMS SOURCE**, whether it is **Online** or **Offline**, and the update rate of the data. This command has limited interactive capabilities for watching the dynamic display of information. These options are described below, but the over-arching characteristic which dictates how this command behaves is how fast the **NEXT** snapshot of OMS data becomes available. Since change can only be calculated when new data is available, this command has to wait for it before updating the display. This means that when using **Online** mode, updates can occur slowly (the sweep rate of the Performance Manager). Conversely, updates can happen quickly in **Offline** mode because the entire collection of **OMS** snapshots are available in the history file.
+
+* `Online` startup time can be quick, or very slow, depending upon when the next `OMS` snapshot becomes available.
+
+### Once, Continuous, Playback
+This command can optionally be used to display just one utilization analysis. By specifying the **-once** option in either **Online** or **Offline** mode, a single utilization calculation will be performed and displayed, and the command will exit, returning command line control.
+
+This command normally "continuously" updates the results of the utilization analysis. The terminal, or command line, is controlled by the tool so that new information can be continuously displayed. To **exit** this continuous mode, use 'Ctrl-c'.
+
+A graphical control, in the form of a horizontal slider, is available when using the **Offline** mode of operation. The **--playControl** option displays the utilization analysis as normal, but also provides a set of gui controls for controlling the speed of playing back the collection of **OMS** snapshots in the history file. It allows playing and pausing the data, as well as controlling the speed once the data is in play mode. You can also have the data **-wrap** around to the start, when the end of the data set is reached. This options should only be selected if your system is capable of displaying graphic user interfaces. To **exit** this playback mode, close the play control, or use 'Ctrl-c'.
 
 ## OPTIONS
 ### Generic SMT Options
@@ -70,61 +64,40 @@ Strings are used to decribe or name an element.  The SMT commands currently only
   prints the version of the SMT command
 
 ### Command Options
-  * `-q`, `--query`=[QUERY ARGUMENT]:
-  query the fabric for specific information specifed by the [QUERY ARGUMENT] argument
+  * `-CA`, `--edgePort`:
+  provide utilization analysis for just Channel Adapter ports and ports connected to Channel Adapter ports
 
-  * `-ql`, `--queryList`:
-  list the available query arguments (same as -q list)
+  * `-dump`, `--dump`:
+  provide the utilization analysis in a simple single line format
 
-  * `-sr`, `--status`:
-  provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+  * `-once`, `--once`:
+  instead of continuously updating the utilization analysis, just provide a single analysis and stop.
 
-### Query Arguments
-Most query optons require some form of node description.  Normally this argument should be supplied prior to the type of query, and can be in the form of a `guid`, `name`, or `lid`.  Several SMT command can provide node identification information.  Refer to `smt-fabric(1)` or `smt-id(1)`.
+  * `-pControl`, `--playControl`:
+  when using `Offline` mode, provide a graphical horizontal slider for controlling playback of the `OMS` snapshots from the file.
 
-  * `active`:
-  checks the fabric and reports issues, similar to iblinkinfo --check
+  * `-pX`, `--playX`=<# times faster>:
+  when using `Offline` mode, directs the collection of `OMS` snapshots from the file to arrive this many times faster than normal.
 
-  * `check`:
-  checks the fabric and reports issues, similar to iblinkinfo --check
+  * `-SW`, `--switch2switch`:
+  provide utilization analysis for just the ports connected between two switches.
 
-  * `config`:
-  list the ideal or expected fabric configuration
-
-  * `down`:
-  shows the ports which are `actively` experiencing errors (includes down ports)
-
-  * `errors`:
-  shows the ports which are `actively` experiencing errors (includes down ports)
-
-  * `list`:
-  list the available query options (same as -ql)
-
-  * `route`:
-  show high level fabric routing table information.  Refer to the `smt-route(1)` command for additional information.
-
-  * `status`:
-  provides a status report, identical to using the `-sr` command option.
+  * `-wrap`, `--wrap`=<t|f>:
+  when using `Offline` mode, directs the playback of the `OMS` snapshots to restart at the beginning when the end is reached (if true), or to simple stop (if false). By default, playback will stop when the end of the collection of snapshots is reached.
 
 ## EXAMPLES
 
-  * `smt-fabric -ql`:
-  list the query options
+  * `smt-utilize -pn 10011`:
+  continuously display the bandwidth utilization of all the ports using the `Online` mode via port 10011
 
-  * `smt-fabric -dF 3`:
-  starting at port 10011, and for the next 3 ports, attempt to find an OMS and report
+  * `smt-utilize -rH myHour.his -pControl -pX 10 -dump -SW`:
+  using the history file, replay the data back at 10 times normal speed. Display the single line form of the bandwidth analysis for just the ports connected between switches. Also, provide the play control gui for interactive control.
 
-  * `smt-fabric -pn 10011 -q switches`:
-  list all the switches in the fabric
+  * `smt-utilize -pn 10013 -once -CA`:
+  display the full utilization report for the ports associated with the Channel adapters. Use `Online` mode with port 10013. Display once, and exit.
 
-  * `smt-fabric -rH surface3.his -q check`:
-  using the history file, perform a fabric check
-
-  * `smt-fabric -pn 10013 -sr`:
-  provide a status report for the fabric on port 10013
-
-  * `smt-fabric -pn 10013 -q service`:
-  check to see if there is a service running on port 10013, and if so, return version and status information
+  * `smt-utilize -rH myHour.his`:
+  using the history file, display the full utilization report for each `OMS` snapshot. The report will include all ports in the fabric.
 
 ## AUTHOR
 
@@ -139,7 +112,7 @@ Copyright (c) 2016, Lawrence Livermore National Security, LLC.
 
 ## SEE ALSO
 
-SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-fabric(1), smt-system(1), smt-port(1), smt-link(1)
+SMT(7), OMS(7), OsmJniPi(8), smt(1), smt-record(1), smt-top(1), smt-node(1), smt-port(1), smt-link(1)
 
 [opensm-smt](https://github.com/meier/opensm-smt) on GitHub
 

@@ -16,7 +16,7 @@ In general, it is best to use the individual `SMT` commands when queries of any 
 
 ## SUB COMMANDS
 
-The Subnet Monitoring Tools (`SMT`) are organized both by heirarchical objects and by function or capability.  Often times it is useful to start with a tool at the top of the heirachy.  The information gathered at that level can then help inform or direct lower level queries.
+The Subnet Monitoring Tools (`SMT`) are organized both by hierarchical objects and by function or capability.  Often times it is useful to start with a tool at the top of the heirachy.  The information gathered at that level can then help inform or direct lower level queries.
 
 ### Object based Commands
   * `--server`, `-srv`:
