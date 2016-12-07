@@ -26,6 +26,26 @@ Files are specified normally (absolute or relative), and the special characters 
 
   A list of history files provides a means for describing an `OMS` history that spanns a timeframe so long that it would be impossible or impractical to cover with a single `OMS` history file.  It is customary, although not enforced, that a list of history files use the `.lst` extension.  List files are simple text files, containing a single history file name per line.  Comments can be included by starting the line with the `#` character.
 
+### Filter
+  A simple filter can be used to convert an existing history file to a `filtered` history file. This is a useful capability when the dynamic activity of only a small subset of the fabric is desired. Perhaps the activity of a single node needs to be monitored, and there is no interest in the remainder of the fabric. This can be easily achieved by using this simple black and white filter.
+
+The filter is described in a file which uses four special characters; `$`, `*`, `@`, and `#`. They must be placed at the beginning of a new line.
+
+  * `$ <Filter Name>`:
+  When placed at the beginning of a new line, this optional attribute gives the filter a name.  It should be unique, but its existence or uniquesness does not affect the filters functionality.  It is simply a `tag` or reference to help identify the filter.
+
+  * `* White`:
+  When placed at the beginning of a new line, this directive indicates that all lines following this line will contain strings that should be white listed. If the white list is empty, all strings are permitted. If the white list is populated, then `ONLY` strings contained in the white list will pass through the filter.
+
+  * `* Black`:
+  When placed at the beginning of a new line, this directive indicates that all lines following this line will contain strings that should be black listed. If the black list is empty, all strings are permitted. If the black list is populated, then strings contained in the black list will be excluded, or filtered.
+
+  * `@ <Filename>`:
+  When placed at the beginning of a new line, with a valid filename, the contents of the file is used to add filter directives. This is useful for building complex filters from a collection of smaller or simple filters.
+
+  * `# <Comment>`:
+  When placed at the beginning of a new line, the line will be ignored, and any text will be considered a comment.
+ 
 ## OPTIONS
 ### Generic SMT Options
   * `-?`, `--Help`:
@@ -50,6 +70,9 @@ Files are specified normally (absolute or relative), and the special characters 
   * `-cH`, `--concat`=[OUTPUT FILE]:
   joins or concatenates `OMS` history data from multiple files into a single `OUTPUT FILE`.  In this case the `SMT FILE` is a file that contains a list of `OMS` history files.  The snapshots from those files are all combined (in the provided order) to create a single `OUTPUT FILE`, which is just another `OMS` history file.  Care should be taken to make sure the resultant file is not too large to be used by the other `SMT` commands.  Most commands need to consume the entire file (to decompress, decrypt, and deserialize) before they can be used.  Huge files can result in long start times.
 
+  * `-filter`, `--filter`=[FILTER FILE] [OUTPUT FILE]:
+  uses the supplied `FILTER FILE` to reduce the contents of the input `OMS` history file.  The `filtered` history is written to the `OUTPUT FILE`.
+ 
   * `-i`, `--info`:
   provides file type specific summary information about the contents of the file.  Obviously this only supports `SMT FILES`.
 
@@ -75,6 +98,9 @@ Files are specified normally (absolute or relative), and the special characters 
 
   * `smt-file surface3h.his -c 4 compress.his`:
   compress surface3h.his 4x and write to compress.his
+
+  * `smt-file MyCab.his -filter cabFilter.flt filteredCab.his`:
+  produces a new `filtered` history file using the supplied history and filter files
 
   * `smt-file sierra3H.his -x Feb 25 12:35:08 2015 Feb 25 13:52:38 2015 sierraSmall.his`:
   extract snapshots from sierra3H.his (t1 to t2) and write to sierraSmall.his

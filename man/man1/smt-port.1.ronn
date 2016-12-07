@@ -100,6 +100,9 @@ Most query optons require some form of port description.  This is a node descrip
   * `route`:
   show the routes (node destinations) out of this port.  This is a portion of the switches' routing table, specifically for this port.  Refer to the `smt-route(1)` command for additional information.
 
+  * `speed [SDR|DDR|QDR|FDR|EDR]`:
+  shows all of the ports configured for the specified speed.
+
   * `status`:
   provides a status or port summary for this individual port.  This is different than the -sr option (all ports combined).
 
@@ -119,6 +122,9 @@ Most query optons require some form of port description.  This is a node descrip
 
   * `smt-port -q counters -pn 10011 14 3`:
   shows all of this ports' counter values
+
+  * `smt-port -q speed EDR -pn 10018`:
+  shows all of the EDR ports
 
   * `smt-port -pn 10013 14 3 -q errors`:
   shows only the error conters for this port

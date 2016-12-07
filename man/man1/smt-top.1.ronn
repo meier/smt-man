@@ -51,7 +51,10 @@ The behavior of this command depends upon the `OMS SOURCE`, whether it is `Onlin
 
 A simple filter can be used to restrict the "top" results. This is a useful capability when the dynamic activity of only a small subset of the fabric is desired. Perhaps the activity of a single node needs to be monitored, and there is no interest in the remainder of the fabric. This can be easily achieved by using this simple black and white filter.
 
-The filter is described in a file which uses three special characters; `*`, `@`, and `#`. They must be placed at the beginning of a new line.
+The filter is described in a file which uses four special characters; `$`, `*`, `@`, and `#`. They must be placed at the beginning of a new line.
+
+  * `$ <Filter Name>`:
+  When placed at the beginning of a new line, this optional attribute gives the filter a name.  It should be unique, but its existence or uniquesness does not affect the filters functionality.  It is simply a `tag` or reference to help identify the filter.
 
   * `* White`:
   When placed at the beginning of a new line, this directive indicates that all lines following this line will contain strings that should be white listed. If the white list is empty, all strings are permitted. If the white list is populated, then `ONLY` strings contained in the white list will pass through the filter.

@@ -12,5 +12,5 @@
 SMT_MAN=$HOME/manRepo/smt-man/man/
 SMT_DST=$HOME/gitRepo/GitHubProjects/opensm-smt/src/dist/man/
 
-scp -p $SMT_MAN/man1/*.1 $SMT_DST/man1/
-scp -p $SMT_MAN/man7/*.7 $SMT_DST/man7/
+rsync -av $SMT_MAN/man1/*.1 $SMT_DST/man1/
+rsync -av $SMT_MAN/man7/*.7 $SMT_DST/man7/

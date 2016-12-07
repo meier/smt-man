@@ -111,6 +111,9 @@ Most query optons are not intended for individual links, rather they return resu
   * `list`:
   list the available query options (same as -ql)
 
+  * `speed [SDR|DDR|QDR|FDR|EDR]`:
+  shows all of the links configured for the specified speed.
+
   * `status`:
   provides a status report, identical to using the `-sr` command option.
 
@@ -143,8 +146,14 @@ Most query optons are not intended for individual links, rather they return resu
   * `smt-link -pn 10011 0006:6a00:e300:4411:16`:
   list the link associated with this port id (could also use 0006:6a00:e300:4411 16)
 
+  * `smt-link -pn 10011 0006:6a00:e300:4411 16 -q status`:
+  provides a status report for the link associated with this port id
+
   * `smt-link -rH smallFab.his bcore1 L224`:
   list all of the links associated with this node name
+
+  * `smt-link -q speed qdr -pn 10018`:
+  shows all of the QDR links
 
 ## AUTHOR
 
