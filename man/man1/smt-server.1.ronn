@@ -7,7 +7,7 @@ smt-server(1) -- a tool for obtaining information about the OpenSM Monitoring Se
 
 ## DESCRIPTION
 
-This SMT command displays high level information about the OpenSM Monitoring Service (OMS) on the remote or server side, as providedded by the OMS SOURCE.  OMS/SMT is fundamentally a client/server architecture, and the OMS is the server side.  This SMT command is a client application which can interrogate the service to obtain various attributes.  In the most simple use-case, this command can tell if the service is running.  It can also tell what version, how heavily it is being used, and its health via the various heartbeats.
+This SMT command displays high level information about the OpenSM Monitoring Service (OMS) on the remote or server side, as provided by the OMS SOURCE.  OMS/SMT is fundamentally a client/server architecture, and the OMS is the server side.  This SMT command is a client application which can interrogate the service to obtain various attributes.  In the most simple use-case, this command can tell if the service is running.  It can also tell what version, how heavily it is being used, and its health via the various heartbeats.
 
 ## OMS SOURCE
 
