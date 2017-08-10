@@ -46,6 +46,39 @@ The filter is described in a file which uses four special characters; `$`, `*`, 
   * `# <Comment>`:
   When placed at the beginning of a new line, the line will be ignored, and any text will be considered a comment.
  
+### Anonymize
+  Private or sensitive data can be removed from an existing history file through the use of the `anonymize` subcommand.  The behavior of this subcommand is controlled by the instructions in a properties file.  The following substitutions are supported.  Defaults values will be used, if nothing is specified.
+
+  * `Anonymize.name`=[FILE NAME]:
+  the name for this set of anonymization rules.  This can also just be the filename.
+
+  * `Anonymize.description`=[ DESCRIPTION ]:
+  the provided `DESCRIPTION` replaces any internal descriptions.
+
+  * `Anonymize.fabric.name`=[NAME]:
+  the provided `NAME` replaces the name of the fabric or cluster.
+
+  * `Anonymize.object.name`=[NAME]:
+  the provided `NAME` replaces any internal names, such as node names.
+
+  * `Anonymize.guid.offset.inHex`=[0xOFFSET]:
+  the provided `0xOFFSET` (a hex value) will be added to every guid value.
+
+  * `Anonymize.subnet.offset.inHex`=[0xOFFSET]:
+  the provided `0xOFFSET` (a hex value) will be added to the subnet prefix.
+
+  * `Anonymize.key.offset.inHex`=[0xOFFSET]:
+  the provided `0xOFFSET` (a hex value) will be added to every key value.
+
+  * `Anonymize.server.name`=[NAME]:
+  the provided `NAME` replaces the name of the remote OMS service or host.
+
+  * `Anonymize.user.name`=[NAME]:
+  the provided `NAME` replaces the name of a client user.  This refers to the OMS client sessions, maintained by the OMS Server.
+
+  * `Anonymize.host.name`=[NAME]:
+  the provided `NAME` replaces the name of a client host.  This refers to the OMS client sessions, maintained by the OMS Server.
+
 ## OPTIONS
 ### Generic SMT Options
   * `-?`, `--Help`:
@@ -72,6 +105,9 @@ The filter is described in a file which uses four special characters; `$`, `*`, 
 
   * `-filter`, `--filter`=[FILTER FILE] [OUTPUT FILE]:
   uses the supplied `FILTER FILE` to reduce the contents of the input `OMS` history file.  The `filtered` history is written to the `OUTPUT FILE`.
+ 
+  * `-anon`, `--anonymizer`=[ANONYMIZE FILE] [OUTPUT FILE]:
+  uses the supplied `ANONYMIZE FILE` to mask or replace the sensitive contents of the input `OMS` history file.  The `anonymized` history is written to the `OUTPUT FILE`.
  
   * `-i`, `--info`:
   provides file type specific summary information about the contents of the file.  Obviously this only supports `SMT FILES`.
@@ -113,6 +149,9 @@ The filter is described in a file which uses four special characters; `$`, `*`, 
 
   * `smt-file historyFiles.lst -cH combinedCompressed.his -c 4`:
   compress AND combine the history files contained in `historyFiles.lst` and write them to `combinedCompressed.his`
+
+  * `smt-file MyCab.his -anon anonymize.ano anonymizedCab.his`:
+  produces a new `anonymized` history file using the supplied history file and an `anonymize.ano` properties file
 
 ## AUTHOR
 
