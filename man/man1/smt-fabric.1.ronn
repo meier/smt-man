@@ -50,7 +50,7 @@ A `guid` is a globally unique identifier, and is 64 bit number.  It can be expre
 ### lid or key
 Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
 ### name
-Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identify a `node`.
 
 ## OPTIONS
 ### Generic SMT Options
@@ -76,8 +76,17 @@ Strings are used to decribe or name an element.  The SMT commands currently only
   * `-fC`, `--fabricConfig`:
   displays the ibfabricconf.xml file if it exists (normal location is /etc/infiniband-diags/)
 
+  * `-gJ`, `--genJSON`=[FILE]:
+  generates a topology file (in JSON format) using the current state of the fabric.  It will be saved to a file, if specified.  You can optionally specify the output to be 'pretty' or 'verbose'.
+
+  * `-gX`, `--genXML`=[FILE]:
+  generates a topology file (in XML format) using the current state of the fabric.  It will be saved to a file, if specified.  You can optionally specify the output to be 'pretty' or 'verbose'. This is useful for creating the '/etc/infiniband-diags/ibfabricconf.xml' topology file.
+
   * `-nM`, `--nodeNameMap`:
   displays the ib-node-name-map file if it exists
+
+  * `-pretty`, `--pretty`:
+  an output qualifier for the topology generator commands.  Usually, this adds new lines and white space, and can make the output easier to read.
 
   * `-q`, `--query`=[QUERY ARGUMENT]:
   query the fabric for specific information specifed by the [QUERY ARGUMENT] argument
@@ -87,6 +96,9 @@ Strings are used to decribe or name an element.  The SMT commands currently only
 
   * `-sr`, `--status`:
   provides a status report on the subnet/fabric.  This information is very similar to the `status` output provided by the OpenSM console (telnet localhost 10000).
+
+  * `-verbose`, `--verbose`:
+  an output qualifier for the topology generator commands.  The output is hierachical, and by default is concise, meaning it doesn't repeat attributes and values inherited from the parent object.  This option forces all values to be displayed for each object.
 
 ### Query Arguments
   * `check`:
@@ -153,7 +165,7 @@ Tim Meier <meier3@llnl.gov>
 
 ## COPYRIGHT
 
-Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+Copyright (c) 2018, Lawrence Livermore National Security, LLC.
   Produced at the Lawrence Livermore National Laboratory.
   All rights reserved.
   LLNL-CODE-673346

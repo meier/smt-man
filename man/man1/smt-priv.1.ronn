@@ -40,7 +40,7 @@ A `guid` is a globally unique identifier, and is 64 bit number.  It can be expre
 Local identifiers for nodes can be specified in hex or decimal.  Hexidecimal numbers must begin with '0x'.
 
 ### name
-Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identify a `node`.
 
 ## OPTIONS
 ### Generic SMT Options
@@ -125,7 +125,7 @@ Tim Meier <meier3@llnl.gov>
 
 ## COPYRIGHT
 
-Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+Copyright (c) 2018, Lawrence Livermore National Security, LLC.
   Produced at the Lawrence Livermore National Laboratory.
   All rights reserved.
   LLNL-CODE-673346

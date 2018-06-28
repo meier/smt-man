@@ -42,7 +42,7 @@ Tim Meier <meier3@llnl.gov>
 
 ## COPYRIGHT
 
-Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+Copyright (c) 2018, Lawrence Livermore National Security, LLC.
   Produced at the Lawrence Livermore National Laboratory.
   All rights reserved.
   LLNL-CODE-673346

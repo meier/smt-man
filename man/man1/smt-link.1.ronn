@@ -50,7 +50,7 @@ A `guid` is a globally unique identifier, and is 64 bit number.  It can be expre
 ### lid or key
 Numbers are often used to identify elements within the context of a 'type' of element.  They can be refered to as 'keys' or 'local ids'.  SMT supports expressing numbers as normal base-10 integers, or as hexidecimal.  Hexidecimal numbers `must` be preceeded with `0x`.
 ### name
-Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identy a `node`.
+Strings are used to decribe or name an element.  The SMT commands currently only supports the use of `names` to identify a `node`.
 
 ## OPTIONS
 ### Generic SMT Options
@@ -71,6 +71,9 @@ Strings are used to decribe or name an element.  The SMT commands currently only
 
 ### Command Options
 If a NODE ID is supplied with the command, then all of the links of the switch or channel adapter will be displayed.  If a PORT ID is supplied, then the individual link associated with that port will be displayed.
+
+  * `-delim`, `--delimiter`=[string]:
+  use the provided string as a field separator for the output of `configured` and `current` query options.
 
   * `-L`, `--level`=[level value]:
   list all of the links with a specific level.  Level 0 shows all of the links connected to Host Channel Adapters.
@@ -95,6 +98,12 @@ Most query optons are not intended for individual links, rather they return resu
 
   * `all`:
   shows all of the links
+
+  * `configured`:
+  using the topology file (/etc/infiniband-diags/ibfabricconf.xml by default), list all of the links in the fabric the way they should be.  This is used as an ideal reference, to look for differences in the fabric.  The links are provided on a single line in the form: <local node><local port num><remote portnum><remote node><speed><width>.  The fields can be separated by an optional delimiter by using the -delim <string> option.
+
+  * `current`:
+  using the current state of the fabric, list all of the links.  The output will be formatted as described above.
 
   * `down`:
   shows all of the inactive links
@@ -161,7 +170,7 @@ Tim Meier <meier3@llnl.gov>
 
 ## COPYRIGHT
 
-Copyright (c) 2016, Lawrence Livermore National Security, LLC.
+Copyright (c) 2018, Lawrence Livermore National Security, LLC.
   Produced at the Lawrence Livermore National Laboratory.
   All rights reserved.
   LLNL-CODE-673346
